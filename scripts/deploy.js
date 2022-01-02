@@ -1,6 +1,11 @@
-// This is a script for deploying your contracts. You can adapt it to deploy
-// yours, or create new ones.
+const distribution = [
+    "selkie.eth",
+];
+
 async function main() {
+  var mainnetEthers = require("ethers");
+  var mainnetProvider = new mainnetEthers.providers.getDefaultProvider();
+
   // This is just a convenience check
   if (network.name === "hardhat") {
     console.warn(
@@ -20,10 +25,14 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const Token = await ethers.getContractFactory("Token");
-  const token = await Token.deploy();
+  const token = await Token.deploy(100);
   await token.deployed();
 
-  console.log("Token address:", token.address);
+  for (addr of distribution) {
+    var resolved = await mainnetProvider.resolveName(addr);
+    console.log(`Sending token to ${addr} (${resolved})...`);
+    await token.transfer(resolved, "1000000000000000000");
+  }
 
   // We also save the contract's artifacts and address in the frontend directory
   saveFrontendFiles(token);
