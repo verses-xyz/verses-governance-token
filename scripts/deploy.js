@@ -1,5 +1,7 @@
+const utils = require("web3-utils");
+
 const distribution = [
-    "selkie.eth",
+  "selkie.eth",
 ];
 
 async function main() {
@@ -25,14 +27,17 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const Token = await ethers.getContractFactory("Token");
-  const token = await Token.deploy(100);
+  const token = await Token.deploy(10);
   await token.deployed();
 
   for (addr of distribution) {
     var resolved = await mainnetProvider.resolveName(addr);
     console.log(`Sending token to ${addr} (${resolved})...`);
-    await token.transfer(resolved, "1000000000000000000");
+    await token.mint(resolved, utils.toWei("1"));
   }
+
+  const supply = await token.totalSupply();
+  console.log("Total supply:", utils.fromWei(supply.toString()));
 
   // We also save the contract's artifacts and address in the frontend directory
   saveFrontendFiles(token);
