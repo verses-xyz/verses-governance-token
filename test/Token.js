@@ -37,6 +37,36 @@ describe("Token contract", function () {
       ).to.be.revertedWith("cannot mint beyond cap");
     });
 
+    it("Should only allow owner to pause or unpause", async function () {
+      const initialOwnerBalance = await versesToken.balanceOf(owner.address);
+
+      // only owner can pause
+      await expect(
+        versesToken.connect(addr1).pause()
+      ).to.be.revertedWith("only owner can pause")
+      expect(!versesToken.paused);
+      await versesToken.pause();
+      expect(versesToken.paused);
+      await expect(
+        versesToken.transfer(addr2.address, ONE)
+      ).to.be.revertedWith("paused");
+
+      // only owner can unpause
+      await expect(
+        versesToken.connect(addr1).unpause()
+      ).to.be.revertedWith("only owner can unpause")
+      expect(versesToken.paused);
+      await versesToken.unpause();
+      expect(!versesToken.paused);
+
+      // token has been transfered
+      await versesToken.transfer(addr1.address, ONE);
+      const ownerBalance = await versesToken.balanceOf(owner.address);
+      expect(ownerBalance).to.equal(initialOwnerBalance.sub(ONE));
+      const addr1Balance = await versesToken.balanceOf(addr1.address);
+      expect(addr1Balance).to.equal(ONE);
+    });
+
     it("Should transfer tokens", async function () {
       const initialOwnerBalance = await versesToken.balanceOf(owner.address);
 

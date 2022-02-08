@@ -3,15 +3,19 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 
-contract Token is ERC20Pausable {
+contract Token is ERC20 {
+    event Paused(address account);
+    event Unpaused(address account);
+
     address public owner;
     uint private immutable _cap;
+    bool private _paused;
 
-    constructor(uint maxHolders) ERC20("Verses Testnet", "VERS3") {
+    constructor(uint maxHolders) ERC20("Verses", "VERSES") {
         require(maxHolders > 1, "max holders must be greater than 1");
         owner = msg.sender;
+        _paused = false;
         _cap = maxHolders * 1_000_000_000_000_000_000;
         _mint(_msgSender(), 1_000_000_000_000_000_000);
     }
@@ -27,11 +31,28 @@ contract Token is ERC20Pausable {
         _mint(account, amount);
     }
 
+    function pause() public {
+        require(msg.sender == owner, "only owner can pause");
+        _paused = true;
+        emit Paused(msg.sender);
+    }
+
+    function unpause() public {
+        require(msg.sender == owner, "only owner can unpause");
+        _paused = false;
+        emit Unpaused(msg.sender);
+    }
+
+    function paused() public view virtual returns (bool) {
+        return _paused;
+    }
+
     function _beforeTokenTransfer(
 	address from,
         address to,
         uint256 amount
-    ) internal override {
+    ) internal override view {
+        require(!paused(), "transfers paused");
         require(amount % 1_000_000_000_000_000_000 == 0, "can only transfer full tokens");
     }
 }
