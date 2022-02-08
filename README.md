@@ -1,14 +1,12 @@
 # Verses Governance Token
 
-A simple mintable, pausable, non-divisible governance token designed to be managed by an owner address.
+A simple mintable, transfer-pausable, non-divisible governance token designed to be managed by an owner address.
 
 - Mintable: The owner may mint new tokens, up to a predefined cap.
 - Pausable: The owner may pause transfers of the token.
 - Non-divisible: Only whole tokens may be transferred or minted between wallets.
 
-In the initial iteration, the owner will be an EOA (externally owned account) held by a Verses council member.
-
-In future iterations, it will be a multisig wallet or governance smart contract (e.g. GovernorBravo).
+In the initial iteration, the owner is an EOA (externally owned account) held by a Verses council member. In future iterations, it may be a multisig wallet.
 
 ## Quick start
 
