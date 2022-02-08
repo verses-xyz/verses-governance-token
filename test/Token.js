@@ -37,6 +37,19 @@ describe("Token contract", function () {
       ).to.be.revertedWith("cannot mint beyond cap");
     });
 
+    it("Should allow owner to be transferred", async function () {
+      const initialOwnerBalance = await versesToken.balanceOf(owner.address);
+
+      await versesToken.transferOwnership(addr1.address);
+      expect(versesToken.owner === addr1.address);
+
+      await expect(
+          versesToken.pause()
+      ).to.be.revertedWith("only owner can pause")
+      await versesToken.connect(addr1).transferOwnership(addr2.address);
+      expect(versesToken.owner === addr2.address);
+    });
+
     it("Should only allow owner to pause or unpause", async function () {
       const initialOwnerBalance = await versesToken.balanceOf(owner.address);
 

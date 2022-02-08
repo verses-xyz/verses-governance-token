@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract Token is ERC20 {
     event Paused(address account);
     event Unpaused(address account);
+    event OwnershipTransferred(address owner, address newOwner);
 
     address public owner;
     uint private immutable _cap;
@@ -45,6 +46,12 @@ contract Token is ERC20 {
 
     function paused() public view virtual returns (bool) {
         return _paused;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "only owner can transfer ownership");
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
     }
 
     function _beforeTokenTransfer(
