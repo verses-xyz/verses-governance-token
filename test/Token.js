@@ -25,13 +25,13 @@ describe("Token contract", function () {
       expect(await versesToken.totalSupply()).to.equal(ONE.mul(6));
     });
 
-    it("Should not mint fractional tokens", async function () {
+    it("Should revert when trying to mint fractional tokens", async function () {
       await expect(
         versesToken.mint(owner.address, ONE.div(2))
       ).to.be.revertedWith("can only mint full tokens");
     });
 
-    it("Should not mint tokens beyond the cap", async function () {
+    it("Should revert when trying to mint tokens beyond the cap", async function () {
       await expect(
         versesToken.mint(owner.address, ONE.mul(10))
       ).to.be.revertedWith("cannot mint beyond cap");
@@ -60,14 +60,13 @@ describe("Token contract", function () {
       ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
     });
 
-    it("Should not transfer fractional tokens", async function () {
+    it("Should revert when trying to transfer fractional tokens", async function () {
       const initialOwnerBalance = await versesToken.balanceOf(owner.address);
 
       await expect(
         versesToken.transfer(addr1.address, ONE.div(2))
       ).to.be.revertedWith("can only transfer full tokens");
 
-      // balance should not change
       const ownerBalance = await versesToken.balanceOf(owner.address);
       expect(ownerBalance).to.equal(initialOwnerBalance);
     });
