@@ -8,7 +8,6 @@ async function main() {
   var mainnetEthers = require("ethers");
   var mainnetProvider = new mainnetEthers.providers.getDefaultProvider();
 
-  // This is just a convenience check
   if (network.name === "hardhat") {
     console.warn(
       "You are trying to deploy a contract to the Hardhat Network, which" +
@@ -17,7 +16,7 @@ async function main() {
     );
   }
 
-  // ethers is avaialble in the global scope
+  // get signer
   const [deployer] = await ethers.getSigners();
   console.log(
     "Deploying the contracts with the account:",
@@ -26,10 +25,12 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
+  // deploy token
   const Token = await ethers.getContractFactory("Token");
   const token = await Token.deploy(10);
   await token.deployed();
 
+  // mint tokens to everyone in distribution list
   for (addr of distribution) {
     var resolved = await mainnetProvider.resolveName(addr);
     console.log(`Sending token to ${addr} (${resolved})...`);
@@ -39,7 +40,7 @@ async function main() {
   const supply = await token.totalSupply();
   console.log("Total supply:", utils.fromWei(supply.toString()));
 
-  // We also save the contract's artifacts and address in the frontend directory
+  // we also save the contract's artifacts and address in the frontend directory
   saveFrontendFiles(token);
 }
 
