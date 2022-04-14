@@ -23,29 +23,30 @@ task("bulkmint", "Mints tokens to addresses in distribution.js").setAction(
     console.log("Using the account:", await deployer.getAddress())
     console.log("Balance:", (await deployer.getBalance()).toString())
 
-    for (const address of distribution) {
+    for (const receiver of distribution) {
       // check that the recipient doesn't have a token already
       const token = await ethers.getContractAt("Token", address)
 
       // check balance
+      console.log("Sending to:", receiver)
       try {
-        const balance = await token.balanceOf(address)
+        const balance = await token.balanceOf(receiver)
         if (balance > 0) {
           console.log("❌ This address already has a token!")
-          return
+          continue
         }
       } catch (err) {
+        console.log("Could not retrieve balance")
         // Some RPC endpoints error on a balance check. Just continue if that happens...
       }
 
       // actually mint them a token
       try {
-        console.log("Sending to:", address)
-        const tx = await token.mint(address, utils.toWei("1"))
+        const tx = await token.mint(receiver, utils.toWei("1"))
         await tx.wait()
-        console.log("✅", address)
+        console.log("✅", receiver)
       } catch (err) {
-        console.log("❌", address)
+        console.log("❌", receiver)
       }
     }
   }

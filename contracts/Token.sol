@@ -13,7 +13,7 @@ contract Token is ERC20 {
     uint private immutable _cap;
     bool private _paused;
 
-    constructor(uint maxHolders) ERC20("Verses Biscuits", "BISCUITS") {
+    constructor(uint maxHolders) ERC20("Verses Seeds", "SEEDS") {
         require(maxHolders > 1, "max holders must be greater than 1");
         owner = msg.sender;
         _paused = false;
