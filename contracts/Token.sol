@@ -13,7 +13,7 @@ contract Token is ERC20 {
     uint private immutable _cap;
     bool private _paused;
 
-    constructor(uint maxHolders) ERC20("Verses", "VERSES") {
+    constructor(uint maxHolders) ERC20("Verses Biscuits", "BISCUITS") {
         require(maxHolders > 1, "max holders must be greater than 1");
         owner = msg.sender;
         _paused = false;
@@ -55,7 +55,7 @@ contract Token is ERC20 {
     }
 
     function _beforeTokenTransfer(
-	address from,
+        address from,
         address to,
         uint256 amount
     ) internal override view {
